@@ -27,7 +27,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $rooms = $this->room->get();
+        $rooms = $this->room->getAll();
 
         return view('home')->with('rooms', $rooms);
     }

@@ -12,4 +12,9 @@ class Reserve extends Model
     protected $table = 'reserves';
 
     protected $fillable = ['reserve_time', 'user_id', 'room_id'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id')->select('users.id', 'users.name');
+    }
 }

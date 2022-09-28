@@ -12,4 +12,14 @@ class Room extends Model
     protected $table = 'rooms';
 
     protected $fillable = ['name', 'reserved'];
+
+    public function reserve()
+    {
+        return $this->hasOne(Reserve::class, 'room_id')->with('user');
+    }
+
+    public function getAll()
+    {
+        return $this->with('reserve')->get();
+    }
 }
