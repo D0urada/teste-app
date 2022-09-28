@@ -48,6 +48,7 @@ services:
             - teste_network
     #npm
     npm:
+        container_name: ${APP_NAME}_npm
         image: node:current-alpine
         environment:
             - NODE_OPTIONS=--openssl-legacy-provider
