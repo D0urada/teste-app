@@ -3,11 +3,11 @@ version: "3.7"
 services:
     # image project
     app:
-        container_name: teste-app
+        container_name: ${APP_NAME}_app
         build:
             context: .
             dockerfile: Dockerfile
-        image: especializati/laravel9-app
+        image: bitnami/laravel
         restart: unless-stopped
         working_dir: /var/www/
         volumes:
@@ -15,56 +15,56 @@ services:
         depends_on:
             - redis
         networks:
-            - teste-app
+            - teste_network
 
     # nginx
     nginx:
-        container_name: nginx
+        container_name: ${APP_NAME}_serve
         image: nginx:alpine
         restart: unless-stopped
         ports:
-            - "8989:80"
+            - "8080:80"
         volumes:
             - ./:/var/www
             - ./docker/nginx/:/etc/nginx/conf.d/
         networks:
-            - teste-app
+            - teste_network
 
     # db postgres
     postgres:
-        container_name: postgres
-        image: postgres:14.5
+        container_name: ${APP_NAME}_db
+        image: postgres:latest
         restart: unless-stopped
         environment:
-            POSTGRES_DATABASE: ${DB_DATABASE}
-            POSTGRES_ROOT_PASSWORD: ${DB_PASSWORD}
-            POSTGRES_PASSWORD: ${DB_PASSWORD}
+            POSTGRES_DB: ${DB_DATABASE}
             POSTGRES_USER: ${DB_USERNAME}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+            POSTGRES_HOST_AUTH_METHOD: "trust"
         volumes:
-            - ./.docker/dbdata:/var/lib/postgresql/data
+            - ./.docker/postgres:/var/lib/postgresql/data
         ports:
-            - "5488:5432"
+            - "5432:5432"
         networks:
-            - teste-app
-
-    # # Node Service
-    # node:
-    #     image: node:alpine
-    #     container_name: node
-    #     restart: unless-stopped
-    #     tty: true
-    #     volumes:
-    #         - ./:/var/www
-    #     networks:
-    #         - teste-app
+            - teste_network
+    #npm
+    npm:
+        image: node:current-alpine
+        environment:
+            - NODE_OPTIONS=--openssl-legacy-provider
+        working_dir: /var/www/
+        volumes:
+            - ./:/var/www
+        entrypoint: ['npm']
+        networks:
+             - teste_network
 
     # redis
     redis:
-        container_name: redis
+        container_name: ${APP_NAME}_redis
         image: redis:latest
         networks:
-            - teste-app
+            - teste_network
 
 networks:
-    teste-app:
+    teste_network:
         driver: bridge

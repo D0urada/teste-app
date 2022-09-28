@@ -10,20 +10,20 @@ RUN apt-get update \
             git \
             curl \
             libpng-dev \
-            libonig-dev \
-            libxml2-dev \
+            libmcrypt-dev \
+            libpq-dev \
+            zlib1g-dev \
+            openssl \
             zip \
             unzip \
         && docker-php-ext-install \
-            pdo \
             pdo_pgsql \
-            pgsql
+            pgsql \
+        && apt-get install -y \
+            postgresql-client
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Install PHP extensions
-# RUN docker-php-ext-install pdo_pgsql pgsql mbstring exif pcntl bcmath gd sockets
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
